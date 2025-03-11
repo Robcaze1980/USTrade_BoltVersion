@@ -1,8 +1,8 @@
 import './globals.css'
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
-import { ThemeProvider } from '@/components/theme-provider'
-import { Toaster } from '@/components/ui/sonner'
+import { ThemeProvider } from '../components/theme-provider'
+import { Toaster } from '../components/ui/sonner'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -10,6 +10,8 @@ export const metadata: Metadata = {
   title: 'US Trade Navigator - Your Global Trade Intelligence Platform',
   description: 'Access real-time trade data, market insights, and HS code analytics with US Trade Navigator.',
 }
+
+import React from 'react';
 
 export default function RootLayout({
   children,

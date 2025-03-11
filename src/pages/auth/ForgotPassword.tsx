@@ -7,12 +7,11 @@ import { toast } from 'sonner';
 
 const schema = z.object({
   email: z.string().email(),
-  password: z.string().min(6, 'Password must be at least 6 characters'),
 });
 
 type Schema = z.infer<typeof schema>;
 
-export default function SignUp() {
+export default function ForgotPassword() {
   const navigate = useNavigate();
   const {
     register,
@@ -22,14 +21,13 @@ export default function SignUp() {
     resolver: zodResolver(schema),
   });
 
-  const handleSignUp = async (data: Schema) => {
+  const handleForgotPassword = async (data: Schema) => {
     try {
-      const { error } = await supabase.auth.signUp({
-        email: data.email,
-        password: data.password,
+      const { error } = await supabase.auth.resetPasswordForEmail(data.email, {
+        redirectTo: `${window.location.origin}/login`,
       });
       if (error) throw error;
-      toast.success('Check your email for the confirmation link!');
+      toast.success('Check your email for the password reset link!');
       navigate('/login');
     } catch (error: any) {
       toast.error(error.message);
@@ -41,10 +39,10 @@ export default function SignUp() {
       <div className="max-w-md w-full space-y-8">
         <div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            Create your account
+            Reset your password
           </h2>
         </div>
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit(handleSignUp)}>
+        <form className="mt-8 space-y-6" onSubmit={handleSubmit(handleForgotPassword)}>
           <div className="rounded-md shadow-sm -space-y-px">
             <div>
               <input
@@ -57,17 +55,6 @@ export default function SignUp() {
                 <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>
               )}
             </div>
-            <div>
-              <input
-                type="password"
-                {...register('password')}
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                placeholder="Password"
-              />
-              {errors.password && (
-                <p className="text-red-500 text-sm mt-1">{errors.password.message}</p>
-              )}
-            </div>
           </div>
 
           <div>
@@ -76,7 +63,7 @@ export default function SignUp() {
               disabled={isSubmitting}
               className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
             >
-              {isSubmitting ? 'Creating account...' : 'Create account'}
+              {isSubmitting ? 'Sending reset link...' : 'Send reset link'}
             </button>
           </div>
         </form>

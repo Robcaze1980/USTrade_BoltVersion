@@ -1,14 +1,49 @@
+﻿﻿﻿﻿﻿﻿import React from 'react';
 "use client"
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card"
-import { Label } from "@/components/ui/label"
+import { Button } from "@components/ui/button"
+import { Input } from "@components/ui/input"
+import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@components/ui/card"
+import { Label } from "@components/ui/label"
 import { toast } from "sonner"
 import { supabase } from "@/lib/supabase"
 import Link from "next/link"
+
+class ErrorBoundary extends React.Component<{children: React.ReactNode}, {hasError: boolean}> {
+  constructor(props: {children: React.ReactNode}) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError(error: Error) {
+    return { hasError: true };
+  }
+
+  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+    console.error("Auth Error:", error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="min-h-screen flex items-center justify-center bg-destructive/10 p-4">
+          <Card className="w-full max-w-md text-destructive">
+            <CardHeader>
+              <CardTitle>Authentication Error</CardTitle>
+              <CardDescription>
+                Failed to load authentication form. Please try refreshing the page.
+              </CardDescription>
+            </CardHeader>
+          </Card>
+        </div>
+      );
+    }
+
+    return this.props.children;
+  }
+}
 
 export default function Login() {
   const router = useRouter()
@@ -57,7 +92,7 @@ export default function Login() {
                 type="email"
                 placeholder="Enter your email"
                 value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, email: e.target.value })}
                 required
               />
             </div>

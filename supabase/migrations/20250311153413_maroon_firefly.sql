@@ -69,11 +69,25 @@ CREATE POLICY "Users can view own subscriptions"
   TO authenticated
   USING (user_id = auth.uid());
 
-CREATE POLICY "Users can update own subscriptions"
+CREATE POLICY "Users can update limited subscription fields"
   ON subscriptions
   FOR UPDATE
   TO authenticated
-  USING (user_id = auth.uid());
+  USING (user_id = auth.uid())
+  WITH CHECK (
+    user_id = auth.uid()
+    AND stripe_subscription_id IS NOT DISTINCT FROM OLD.stripe_subscription_id
+    AND status IS NOT DISTINCT FROM OLD.status
+    AND plan_type IS NOT DISTINCT FROM OLD.plan_type
+    AND current_period_end IS NOT DISTINCT FROM OLD.current_period_end
+  );
+
+CREATE POLICY "System can update subscriptions"
+  ON subscriptions
+  FOR UPDATE
+  TO authenticated
+  USING (true)
+  WITH CHECK (auth.role() = 'service_role');
 
 -- Create function to handle user creation
 CREATE OR REPLACE FUNCTION public.handle_new_user()
