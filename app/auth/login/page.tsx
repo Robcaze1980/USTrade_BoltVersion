@@ -1,4 +1,4 @@
-﻿﻿﻿﻿﻿﻿import React from 'react';
+﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿import React from 'react';
 "use client"
 
 import { useState } from "react"
@@ -11,68 +11,35 @@ import { toast } from "sonner"
 import { supabase } from "@/lib/supabase"
 import Link from "next/link"
 
-class ErrorBoundary extends React.Component<{children: React.ReactNode}, {hasError: boolean}> {
-  constructor(props: {children: React.ReactNode}) {
-    super(props);
-    this.state = { hasError: false };
-  }
-
-  static getDerivedStateFromError(error: Error) {
-    return { hasError: true };
-  }
-
-  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    console.error("Auth Error:", error, errorInfo);
-  }
-
-  render() {
-    if (this.state.hasError) {
-      return (
-        <div className="min-h-screen flex items-center justify-center bg-destructive/10 p-4">
-          <Card className="w-full max-w-md text-destructive">
-            <CardHeader>
-              <CardTitle>Authentication Error</CardTitle>
-              <CardDescription>
-                Failed to load authentication form. Please try refreshing the page.
-              </CardDescription>
-            </CardHeader>
-          </Card>
-        </div>
-      );
-    }
-
-    return this.props.children;
-  }
-}
 
 export default function Login() {
   const router = useRouter()
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
-  })
+  });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
     try {
-      setIsLoading(true)
-      const { data, error } = await supabase.auth.signInWithPassword({
+      setIsLoading(true);
+      const { error } = await supabase.auth.signInWithPassword({
         email: formData.email,
         password: formData.password,
-      })
+      });
 
-      if (error) throw error
+      if (error) throw error;
 
-      toast.success("Logged in successfully!")
-      router.push("/dashboard")
+      toast.success("Logged in successfully!");
+      router.push("/dashboard");
     } catch (error: any) {
-      toast.error(error.message)
+      toast.error(error.message);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
